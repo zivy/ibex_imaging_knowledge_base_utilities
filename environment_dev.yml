@@ -9,7 +9,7 @@ dependencies:
   - pip:
     - pandas
     - tabulate
-    - bibtexparser
+    - bibtexparser==2.0.0
     - requests
     - pytest
     - black
