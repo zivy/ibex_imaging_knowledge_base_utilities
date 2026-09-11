@@ -35,8 +35,12 @@ def validate_bib_file_data(publications_bib_filename):
     bib_database = bibtexparser.parse_file(publications_bib_filename)
 
     if bib_database.failed_blocks:
+        failed_block_details = "\n".join(
+            f"Entry starting on line {block.start_line}: {block.error}"
+            for block in bib_database.failed_blocks
+        )
         print(
-            f"Malformed bibtex entries, syntax error\n:{bib_database.failed_blocks}",
+            f"Malformed BibTeX entries:\n{failed_block_details}",
             file=sys.stderr,
         )
         return 1
