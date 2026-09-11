@@ -27,26 +27,16 @@ This script validates the contents of the publications.bib file, a bibliography 
 2. Check that the required fields ("author", "title", "year", "doi", "note") exist. An entry without doi and note
    fields is a valid bibtex entry in terms of format but the IBEX imaging knowledge-base requires them.
 
-Note that incorrectly formatted entries in terms of syntax are skipped and no error is reported. This is due to the
-usage of bibtexparser v1. The incorrectly formatted entries are listed as comments by the v1 implementation. This is
-expected to change in v2 but it has not been released yet. Will require updating the code once released.
+Malformed BibTeX blocks are reported by bibtexparser v2 and cause validation to fail.
 """
 
 
 def validate_bib_file_data(publications_bib_filename):
+    bib_database = bibtexparser.parse_file(publications_bib_filename)
 
-    # load the bibliography data, entries that are incorrect syntactically (e.g. missing ID or comma etc.)
-    # are ignored
-    with open(publications_bib_filename) as biblatex_file:
-        bib_database = bibtexparser.load(biblatex_file)
-
-    # bibtexparser v1 does not report errors for entries with syntax errors, they are listed as comments.
-    # We assume no comments in the file.
-    # v2 which is still under development explicitly lists them as errors bib_database.failed_blocks
-    # the following code will need to be updated once v2 is officially released.
-    if bib_database.comments:
+    if bib_database.failed_blocks:
         print(
-            f"Malformed bibtex entries, syntax error\n:{bib_database.comments}",
+            f"Malformed bibtex entries, syntax error\n:{bib_database.failed_blocks}",
             file=sys.stderr,
         )
         return 1
@@ -58,13 +48,13 @@ def validate_bib_file_data(publications_bib_filename):
     # check that the bib IDs are unique
     bib_database_ids = dict()
     for entry in bib_database.entries:
-        current_id = entry["ID"]
+        current_id = entry.key
         if current_id in bib_database_ids:
             bib_database_ids[current_id] = bib_database_ids[current_id] + 1
         else:
             bib_database_ids[current_id] = 1
         # using casefold() is preferred over lower() as it deals correctly with non-ascii characters
-        entry_keys = {k.casefold() for k in entry.keys()}
+        entry_keys = {"id", *(field.key.casefold() for field in entry.fields)}
         if not required_entry_keys.issubset(entry_keys):
             print(
                 f"One or more missing required fields ({', '.join(required_entry_keys)}) from entry {current_id}.",

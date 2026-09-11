@@ -17,7 +17,7 @@ repos:
    - id: trailing-whitespace
      files: \.py$
 - repo: https://github.com/psf/black
-  rev: 25.9.0
+  rev: 26.5.1
   hooks: # check conformance to black formatting
    - id: black 
      args: ['--check'] # if run without arguments, will fail and will format the files

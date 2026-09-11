@@ -19,6 +19,12 @@ needed. This is equivalent to summarizing all activity on a feature branch versu
 
 ## Unreleased
 
+## v1.1.0
+
+### Changed
+* validate_bibfile - Modify to use bibtexparser v2 (2.0.0).
+* bib2md - Modify to use bibtexparser v2 (2.0.0). Additionally, change sorting order so that primary sort is on year and secondary sort is on the first author's last name with correct support for accents.
+
 ## v1.0.0
 
 ### Changed
@@ -67,7 +73,7 @@ needed. This is equivalent to summarizing all activity on a feature branch versu
 ## v0.8.1
 
 ### Fixed
-* validate_bib - incorrect argument name used in main (args.zenodo_json when it should be args.bibfile).
+* validate_bibfile - incorrect argument name used in main (args.zenodo_json when it should be args.bibfile).
 * validate_image_resources - use of relative path instead of absolute path resulted in incorrect mismatches between filenames from csv and actual files on disk, changed to absolute path resolved the issue.
 
 ## v0.8.0
