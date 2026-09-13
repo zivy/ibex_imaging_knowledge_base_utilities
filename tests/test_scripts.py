@@ -375,6 +375,7 @@ class TestBibfileValidataion(BaseTest):
             ("missing_key.bib", 1),
             ("syntax_error.bib", 1),
             ("duplicate_journal_key.bib", 1),
+            ("author_list_without_and_separator.bib", 1),
         ],
     )
     def test_validate_bibfile(self, bibtex_file_name, result):
