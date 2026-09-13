@@ -12,7 +12,7 @@ authors = [{ name="Ziv Yaniv", email="zivyaniv@nih.gov" },
 description = "Utility scripts used for managing the IBEX Imaging Community Knowledge-Base"
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.10.0"
+requires-python = ">=3.11.0"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",

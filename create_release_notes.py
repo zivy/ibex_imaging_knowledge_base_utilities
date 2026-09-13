@@ -20,12 +20,15 @@ import re
 import argparse
 import pathlib
 import sys
+import tomllib
 
 """
-This script creates the release notes for a given release. These are extracted from the
-CHANGELOG.md file and written to release_notes.txt. If the given release does not exist
-in the CHANGELOG.md file or there are no notes, the script returns a failure value,
-otherwise it is considered a success.
+This script creates the release notes for a given release. These are extracted
+from the CHANGELOG.md file and written to release_notes.txt.
+
+If the given release does not match the version in the pyproject.toml file or
+it does not exist in the CHANGELOG.md file or there are no notes, the script
+returns a failure value, otherwise it is considered a success.
 """
 
 
@@ -94,7 +97,19 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     try:
-        create_release_notes(
+        with open(
+            pathlib.Path(__file__).parent.absolute() / "pyproject.toml", "rb"
+        ) as fp:
+            package_version = tomllib.load(fp)["project"]["version"]
+        expected_release_tag = f"v{package_version}"
+        if args.release_tag != expected_release_tag:
+            print(
+                f"Pushed release tag ({args.release_tag}) does not match the package version "
+                f"({package_version}) in the pyproject.toml file",
+                file=sys.stderr,
+            )
+            return 1
+        return create_release_notes(
             repository=args.repository,
             package_name=args.package_name,
             release_tag=args.release_tag,
@@ -109,7 +124,6 @@ def main(argv=None):
             file=sys.stderr,
         )
         return 1
-    return 0
 
 
 if __name__ == "__main__":
