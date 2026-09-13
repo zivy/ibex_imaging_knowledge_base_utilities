@@ -19,6 +19,7 @@
 import bibtexparser
 import sys
 import argparse
+import re
 from ibex_imaging_knowledge_base_utilities.argparse_types import file_path_endswith
 
 """
@@ -29,6 +30,20 @@ This script validates the contents of the publications.bib file, a bibliography 
 
 Malformed BibTeX blocks are reported by bibtexparser v2 and cause validation to fail.
 """
+
+
+_AUTHOR_SEPARATOR_PATTERN = re.compile(r"\s+and\s+", re.IGNORECASE)
+
+
+def _has_comma_separated_author_list(author):
+    """Return whether an author list uses commas instead of BibTeX's ``and``."""
+    # Single author or multiple authors separated by "and"
+    if _AUTHOR_SEPARATOR_PATTERN.search(author):
+        return False
+
+    # A single BibTeX name may contain up to two commas: "Last, First" or
+    # "Last, Jr, First". More commas without an `and` separator is a list.
+    return author.count(",") > 2
 
 
 def validate_bib_file_data(publications_bib_filename):
@@ -62,6 +77,13 @@ def validate_bib_file_data(publications_bib_filename):
         if not required_entry_keys.issubset(entry_keys):
             print(
                 f"One or more missing required fields ({', '.join(required_entry_keys)}) from entry {current_id}.",
+                file=sys.stderr,
+            )
+            return 1
+        fields = {field.key.casefold(): field.value for field in entry.fields}
+        if _has_comma_separated_author_list(fields["author"]):
+            print(
+                f"Author list in entry {current_id} must separate authors with 'and', not commas.",
                 file=sys.stderr,
             )
             return 1

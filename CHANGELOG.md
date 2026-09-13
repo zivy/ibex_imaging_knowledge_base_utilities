@@ -19,6 +19,12 @@ needed. This is equivalent to summarizing all activity on a feature branch versu
 
 ## Unreleased
 
+
+## v1.2.0
+
+### Fixed
+* validate_bibfile - Check that the author list separator is the word "and" as required by bibtex and not using a comma which is incorrect. Also improve the error reporting message.
+
 ## v1.1.0
 
 ### Changed
